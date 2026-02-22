@@ -1,0 +1,155 @@
+<div class="h-full flex flex-col bg-gray-50 border-r border-gray-200 shadow-sm p-6 overflow-y-auto w-full">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Invoice Details</h2>
+
+  <!-- General Info -->
+  <div class="space-y-4 mb-8">
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">General Information</h3>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Invoice No.</label>
+        <input type="text" [(ngModel)]="localData.invoiceNo" (ngModelChange)="onGlobalDataChange('invoiceNo', $event)"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="e.g. INV-001">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+        <input type="date" [(ngModel)]="localData.date" (ngModelChange)="onGlobalDataChange('date', $event)"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+    </div>
+  </div>
+
+  <!-- Billed To -->
+  <div class="space-y-4 mb-8">
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Billed To</h3>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Name / Company</label>
+      <input type="text" [(ngModel)]="localData.billedTo.name" (ngModelChange)="onBilledToChange('name', $event)"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Client Name">
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+        <input type="text" [(ngModel)]="localData.billedTo.phone" (ngModelChange)="onBilledToChange('phone', $event)"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Phone Number">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Aadhar No.</label>
+        <input type="text" [(ngModel)]="localData.billedTo.aadhar" (ngModelChange)="onBilledToChange('aadhar', $event)"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Aadhar Number">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+      <textarea [(ngModel)]="localData.billedTo.address" (ngModelChange)="onBilledToChange('address', $event)" rows="2"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Client Address"></textarea>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div class="space-y-4 mb-8">
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Line Items (Max 9)</h3>
+
+    <div *ngFor="let item of localData.items; let i = index"
+      class="p-4 bg-white border border-gray-200 rounded-md mb-2 relative">
+      <button *ngIf="localData.items.length > 1" (click)="removeItem(i)"
+        class="absolute top-2 right-2 text-red-500 hover:text-red-700" title="Remove Item">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd" />
+        </svg>
+      </button>
+
+      <div class="grid grid-cols-12 gap-3">
+        <div class="col-span-12 sm:col-span-6">
+          <label class="block text-xs font-medium text-gray-500 mb-1">Description</label>
+          <input type="text" [(ngModel)]="item.description" (ngModelChange)="onItemChange(i, 'description', $event)"
+            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="Item description">
+        </div>
+        <div class="col-span-4 sm:col-span-2">
+          <label class="block text-xs font-medium text-gray-500 mb-1">Price (₹)</label>
+          <input type="text" [(ngModel)]="item.price" (ngModelChange)="onItemChange(i, 'price', $event)"
+            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="0.00">
+        </div>
+        <div class="col-span-4 sm:col-span-2">
+          <label class="block text-xs font-medium text-gray-500 mb-1">Qty</label>
+          <input type="text" [(ngModel)]="item.qty" (ngModelChange)="onItemChange(i, 'qty', $event)"
+            class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            placeholder="1">
+        </div>
+        <div class="col-span-4 sm:col-span-2">
+          <label class="block text-xs font-medium text-gray-500 mb-1">Total</label>
+          <div class="w-full py-1 text-sm text-gray-700 font-medium">₹{{ (Number(item.price)||0) * (Number(item.qty)||0)
+            }}</div>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="addItem()" [disabled]="localData.items.length >= 9"
+      class="w-full py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-md hover:border-blue-500 hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd"
+          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+          clip-rule="evenodd" />
+      </svg>
+      Add Row
+    </button>
+  </div>
+
+  <!-- Summary Adjustments -->
+  <div class="space-y-4 mb-8">
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Adjustments</h3>
+
+    <div class="grid grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Discount (%)</label>
+        <input type="number" [(ngModel)]="localData.discountPercent"
+          (ngModelChange)="onGlobalDataChange('discountPercent', Number($event))"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">GST (%)</label>
+        <input type="number" [(ngModel)]="localData.gstPercent"
+          (ngModelChange)="onGlobalDataChange('gstPercent', Number($event))"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Adj. Amount (₹)</label>
+        <!-- Changed to type="text" to allow typing '-' smoothly -->
+        <input type="text" [(ngModel)]="localData.adjustment"
+          (ngModelChange)="onGlobalDataChange('adjustment', $event === '-' || $event === '' ? $event : Number($event))"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="+ / -">
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="mt-auto pt-6 border-t border-gray-200">
+    <div class="flex space-x-4">
+      <button (click)="resetForm()"
+        class="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors font-medium">
+        Clear Form
+      </button>
+      <button (click)="generatePdf()"
+        class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z"
+            clip-rule="evenodd" />
+        </svg>
+        Generate PDF
+      </button>
+    </div>
+  </div>
+</div>

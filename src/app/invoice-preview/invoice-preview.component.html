@@ -1,0 +1,207 @@
+<!-- Wrapper for the whole preview area -->
+<div class="h-full flex justify-center bg-gray-200 overflow-y-auto w-full p-4">
+
+    <!-- Actual exactly-sized A4 paper container -->
+    <!-- A4 ratio is roughly 210mm x 297mm -->
+    <div id="invoiceContent" class="bg-white shadow-lg relative"
+        style="width: 210mm; min-height: 297mm; max-width: 210mm; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+        <!-- Background Watermark overlay (optional if we can't extract it, but styling says 'exactly') -->
+        <!-- We don't have the explicit watermark asset, so we'll do our best with CSS absolute positioning if needed,
+         or stick strictly to the content layout as given by the static assets and text -->
+
+        <!-- padding container -->
+        <div class="px-10 py-12 h-full flex flex-col">
+
+            <!-- HEADER SECION -->
+            <div class="flex justify-between items-start mb-6">
+                <!-- Logo Centered Top -->
+                <div class="w-full flex justify-center absolute top-4 left-0 right-0">
+                    <img src="assets/logo.png" alt="Company Logo" class="h-28 object-contain">
+                </div>
+
+                <!-- Spacer for absolute logo -->
+                <div class="mt-28 w-full flex justify-between tracking-wide">
+
+                    <!-- Left Details (Dynamic GST/Invoice) -->
+                    <div class="w-1/2 text-sm space-y-2 pt-2">
+                        <div class="flex">
+                            <span class="font-medium w-24">GST No:</span>
+                            <!-- <span>(Dynamic field)</span> -->
+                            <span>NA</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Invoice No:</span>
+                            <span>{{ invoiceData.invoiceNo }}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Date:</span>
+                            <span>{{ invoiceData.date | date:'dd/MM/yyyy' }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Details (Billed To) -->
+                    <div class="w-1/2 text-sm space-y-1 pl-10 border-l border-transparent">
+                        <div class="font-bold text-base mb-2">BILLED TO:</div>
+
+                        <div class="font-semibold text-gray-800" *ngIf="invoiceData.billedTo.name">{{
+                            invoiceData.billedTo.name }}</div>
+
+                        <div class="flex mt-1">
+                            <span class="font-medium w-24">Phone:</span>
+                            <span>{{ invoiceData.billedTo.phone }}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Aadhar no:</span>
+                            <span>{{ invoiceData.billedTo.aadhar }}</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="font-medium w-24">Address:</span>
+                            <span class="flex-1 whitespace-pre-wrap">{{ invoiceData.billedTo.address }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITEMS TABLE -->
+            <!-- teal color: #78B3B5 approx based on template -->
+            <div class="w-full mt-2 mb-2 border border-[#5A9B9C] flex-1 flex flex-col relative z-10">
+
+                <!-- Background watermark logo if needed -->
+                <div
+                    class="absolute inset-0 z-[-1] flex justify-center items-center opacity-[0.05] pointer-events-none">
+                    <img src="assets/logo.png" class="w-2/3 h-auto" />
+                </div>
+
+                <!-- Table Header -->
+                <!-- Using inline bg color from screenshot approx #83BCBD -->
+                <div class="flex text-white font-medium text-sm" style="background-color: #83BCBD;">
+                    <div class="w-12 py-2 text-center border-r border-[#5A9B9C]"></div>
+                    <div class="flex-1 py-2 px-4 border-r border-[#5A9B9C]">Description:</div>
+                    <div class="w-32 py-2 text-center border-r border-[#5A9B9C]">Price:</div>
+                    <div class="w-24 py-2 text-center border-r border-[#5A9B9C]">Qty:</div>
+                    <div class="w-32 py-2 text-center">Amt:</div>
+                </div>
+
+                <!-- Table Body (Fill 9 rows minimum) -->
+                <div class="flex-1 flex flex-col">
+                    <!-- Iterate exactly 9 times or just mapping elements -->
+                    <div *ngFor="let item of invoiceData.items; let idx = index"
+                        class="flex text-sm text-gray-800 flex-1 min-h-[40px]">
+                        <div class="w-12 py-2 text-center border-r border-[#5A9B9C]">{{ idx + 1 }}.</div>
+                        <div class="flex-1 py-2 px-4 border-r border-[#5A9B9C]">{{ item.description }}</div>
+                        <div class="w-32 py-2 text-center border-r border-[#5A9B9C]">{{ item.price ? '₹ ' + item.price :
+                            '' }}</div>
+                        <div class="w-24 py-2 text-center border-r border-[#5A9B9C]">{{ item.qty || '-' }}</div>
+                        <div class="w-32 py-2 text-center">{{ item.total ? '₹ ' + item.total : '₹ ' }}</div>
+                    </div>
+
+                    <!-- Empty rows filler to match the design (e.g. 1-9 numbering) -->
+                    <ng-container *ngIf="invoiceData.items.length < 9">
+                        <div *ngFor="let empty of [].constructor(9 - invoiceData.items.length); let idx = index"
+                            class="flex text-sm text-gray-800 flex-1 min-h-[40px]">
+                            <div class="w-12 py-2 text-center border-r border-[#5A9B9C]">{{ invoiceData.items.length +
+                                idx + 1 }}.</div>
+                            <div class="flex-1 py-2 px-4 border-r border-[#5A9B9C]"></div>
+                            <div class="w-32 py-2 text-center border-r border-[#5A9B9C]"></div>
+                            <div class="w-24 py-2 text-center border-r border-[#5A9B9C]"></div>
+                            <div class="w-32 py-2 text-center"></div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <!-- FOOTER SECTION -->
+            <div class="mt-auto pt-4 flex">
+
+                <!-- Signature & Stamp (Left) -->
+                <div class="w-1/2 relative min-h-[140px]">
+                    <!-- Stamp slightly overlapping signature -->
+                    <img src="assets/stamp.png" alt="Company Stamp" class="absolute w-32 inset-0 opacity-80"
+                        style="top: -20px; left: 0px;" />
+                    <img src="assets/signature.png" alt="Signature" class="absolute w-40 z-10"
+                        style="top: 10px; left: 80px;" />
+
+                    <div class="absolute bottom-4 left-4 text-xs font-bold leading-tight">
+                        <div>COMPANY OFFICIAL SIGNATURE</div>
+                        <div class="text-[#5A9B9C]">RANGETRAIL TRAVEL & TOURISM PVT LTD</div>
+                    </div>
+                </div>
+
+                <!-- Totals (Right) -->
+                <div class="w-1/2 flex justify-end">
+                    <div class="w-64 text-sm text-gray-600 space-y-2 mt-4">
+
+                        <div class="flex justify-between">
+                            <span>Total</span>
+                            <span>₹ {{ subtotal }}</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>GST</span>
+                            <span>{{ invoiceData.gstPercent }}% (₹ {{ gstAmount }})</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Discount</span>
+                            <span>-{{ invoiceData.discountPercent }}% (-₹ {{ discountAmount }})</span>
+                        </div>
+
+                        <div class="flex justify-between text-xs" *ngIf="invoiceData.adjustment !== 0">
+                            <span>Adjustment</span>
+                            <span>{{ invoiceData.adjustment > 0 ? '+' : '' }}₹ {{ invoiceData.adjustment }}</span>
+                        </div>
+
+                        <div
+                            class="flex justify-between font-bold text-gray-800 text-base pt-2 border-t border-[#5A9B9C] mt-2">
+                            <span>Total:</span>
+                            <span>₹ {{ grandTotal }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Contact Info -->
+            <div class="mt-8 pt-4 flex justify-between items-end border-t border-gray-100 text-xs text-gray-700 pb-2">
+                <div class="space-y-1 w-2/3">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-[#5A9B9C]" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z">
+                            </path>
+                        </svg>
+                        9365961218, 6002514215
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-[#5A9B9C]" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        rangetrail.tours@gmail.com
+                    </div>
+                    <div class="flex items-start">
+                        <svg class="w-4 h-4 mr-2 mt-0.5 text-[#5A9B9C]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        House no: 35, Byland 2, Aziz Nagar, Sixmile<br>Guwahati, Assam - 781023
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2 text-[#5A9B9C]" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        https://brotherstravel.tours
+                    </div>
+                </div>
+
+                <div class="w-1/3 text-right">
+                    Customer signature
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
