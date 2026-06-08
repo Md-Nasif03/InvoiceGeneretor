@@ -11,10 +11,10 @@
          or stick strictly to the content layout as given by the static assets and text -->
 
         <!-- padding container -->
-        <div class="px-10 py-12 h-full flex flex-col">
+        <div class="px-10 py-8 h-full flex flex-col">
 
             <!-- HEADER SECION -->
-            <div class="flex justify-between items-start mb-6">
+            <div class="flex justify-between items-start mb-4">
                 <!-- Logo Centered Top -->
                 <div class="w-full flex justify-center absolute top-4 left-0 right-0">
                     <img src="assets/logo.png" alt="Company Logo" class="h-28 object-contain">
@@ -65,7 +65,7 @@
 
             <!-- ITEMS TABLE -->
             <!-- teal color: #78B3B5 approx based on template -->
-            <div class="w-full mt-2 mb-2 border border-[#5A9B9C] flex-1 flex flex-col relative z-10">
+            <div class="w-full mt-2 mb-2 border border-[#5A9B9C] flex flex-col relative z-10">
 
                 <!-- Background watermark logo if needed -->
                 <div
@@ -83,11 +83,11 @@
                     <div class="w-32 py-2 text-center">Amt:</div>
                 </div>
 
-                <!-- Table Body (Fill 9 rows minimum) -->
+                <!-- Table Body (Fill 10 rows minimum) -->
                 <div class="flex-1 flex flex-col">
-                    <!-- Iterate exactly 9 times or just mapping elements -->
+                    <!-- Iterate up to 10 rows -->
                     <div *ngFor="let item of invoiceData.items; let idx = index"
-                        class="flex text-sm text-gray-800 flex-1 min-h-[40px]">
+                        class="flex text-sm text-gray-800 flex-1 min-h-[32px]">
                         <div class="w-12 py-2 text-center border-r border-[#5A9B9C]">{{ idx + 1 }}.</div>
                         <div class="flex-1 py-2 px-4 border-r border-[#5A9B9C]">{{ item.description }}</div>
                         <div class="w-32 py-2 text-center border-r border-[#5A9B9C]">{{ item.price ? '₹ ' + item.price :
@@ -96,10 +96,10 @@
                         <div class="w-32 py-2 text-center">{{ item.total ? '₹ ' + item.total : '₹ ' }}</div>
                     </div>
 
-                    <!-- Empty rows filler to match the design (e.g. 1-9 numbering) -->
-                    <ng-container *ngIf="invoiceData.items.length < 9">
-                        <div *ngFor="let empty of [].constructor(9 - invoiceData.items.length); let idx = index"
-                            class="flex text-sm text-gray-800 flex-1 min-h-[40px]">
+                    <!-- Empty rows filler to match the design (10 rows) -->
+                    <ng-container *ngIf="invoiceData.items.length < 10">
+                        <div *ngFor="let empty of [].constructor(10 - invoiceData.items.length); let idx = index"
+                            class="flex text-sm text-gray-800 flex-1 min-h-[32px]">
                             <div class="w-12 py-2 text-center border-r border-[#5A9B9C]">{{ invoiceData.items.length +
                                 idx + 1 }}.</div>
                             <div class="flex-1 py-2 px-4 border-r border-[#5A9B9C]"></div>
@@ -112,17 +112,15 @@
             </div>
 
             <!-- FOOTER SECTION -->
-            <div class="mt-auto pt-4 flex">
+            <div class="pt-2 flex">
 
                 <!-- Signature & Stamp (Left) -->
-                <div class="w-1/2 relative min-h-[140px]">
-                    <!-- Stamp slightly overlapping signature -->
-                    <img src="assets/stamp.png" alt="Company Stamp" class="absolute w-32 inset-0 opacity-80"
-                        style="top: -20px; left: 0px;" />
-                    <img src="assets/signature.png" alt="Signature" class="absolute w-40 z-10"
-                        style="top: 10px; left: 80px;" />
-
-                    <div class="absolute bottom-4 left-4 text-xs font-bold leading-tight">
+                <div class="w-1/2 min-h-[100px]">
+                    <div class="flex items-center">
+                        <img src="assets/stamp.png" alt="Company Stamp" class="w-32 opacity-80" />
+                        <img src="assets/signature.png" alt="Signature" class="w-40" />
+                    </div>
+                    <div class="mt-1 text-xs font-bold leading-tight">
                         <div>COMPANY OFFICIAL SIGNATURE</div>
                         <div class="text-[#5A9B9C]">RANGETRAIL TRAVEL & TOURISM PVT LTD</div>
                     </div>
@@ -130,7 +128,7 @@
 
                 <!-- Totals (Right) -->
                 <div class="w-1/2 flex justify-end">
-                    <div class="w-64 text-sm text-gray-600 space-y-2 mt-4">
+                    <div class="w-64 text-sm text-gray-600 space-y-1 mt-2">
 
                         <div class="flex justify-between">
                             <span>Total</span>
@@ -161,8 +159,47 @@
                 </div>
             </div>
 
+            <!-- Payment Information & Booking Status Section -->
+            <div class="mt-2 pt-2 border-t border-[#83BCBD] flex">
+
+                <!-- Booking Status (Left, beside signature area) -->
+                <div class="w-1/2 flex items-center">
+                    <div *ngIf="bookingStatus === 'confirmed'"
+                        class="inline-flex items-center px-4 py-2 rounded-md text-sm font-bold tracking-wide"
+                        style="background-color: #e6f7f0; color: #1a7a4c; border: 1.5px solid #34a872;">
+                        ✅ BOOKING CONFIRMED
+                    </div>
+                    <div *ngIf="bookingStatus === 'pending'"
+                        class="inline-flex items-center px-4 py-2 rounded-md text-sm font-bold tracking-wide"
+                        style="background-color: #fef9e7; color: #8a6d1b; border: 1.5px solid #d4a82a;">
+                        ⏳ PENDING CONFIRMATION
+                    </div>
+                </div>
+
+                <!-- Payment Information (Right) -->
+                <div class="w-1/2 flex justify-end">
+                    <div class="w-64 text-sm text-gray-600 space-y-1">
+                        <div class="font-bold text-xs uppercase tracking-wider mb-1" style="color: #5A9B9C;">Payment Information</div>
+
+                        <div class="flex justify-between">
+                            <span>Invoice Amount</span>
+                            <span class="font-medium text-gray-800">₹ {{ grandTotal }}</span>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span>Advance Payment</span>
+                            <span class="font-medium" style="color: #5A9B9C;">₹ {{ advancePayment }}</span>
+                        </div>
+
+                        <div class="flex justify-between font-bold text-gray-800 text-base pt-2 border-t border-[#5A9B9C] mt-2">
+                            <span>Remaining:</span>
+                            <span>₹ {{ remainingBalance }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Footer Contact Info -->
-            <div class="mt-8 pt-4 flex justify-between items-end border-t border-gray-100 text-xs text-gray-700 pb-2">
+            <div class="mt-4 pt-2 flex justify-between items-end border-t border-gray-100 text-xs text-gray-700 pb-2">
                 <div class="space-y-1 w-2/3">
                     <div class="flex items-center">
                         <svg class="w-4 h-4 mr-2 text-[#5A9B9C]" fill="currentColor" viewBox="0 0 20 20">

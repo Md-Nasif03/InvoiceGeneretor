@@ -21,6 +21,7 @@ export interface InvoiceData {
   discountPercent: number;
   gstPercent: number;
   adjustment: number;
+  advancePayment: number;
 }
 
 @Injectable({
@@ -40,7 +41,8 @@ export class InvoiceService {
     items: [this.createEmptyItem()],
     discountPercent: 5,
     gstPercent: 5,
-    adjustment: 0
+    adjustment: 0,
+    advancePayment: 0
   });
 
   // Selectors
@@ -64,6 +66,14 @@ export class InvoiceService {
 
   readonly grandTotal = computed(() => {
     return this.amountAfterDiscount() + this.gstAmount() + this.state().adjustment;
+  });
+
+  readonly remainingBalance = computed(() => {
+    return this.grandTotal() - (this.state().advancePayment || 0);
+  });
+
+  readonly bookingStatus = computed(() => {
+    return (this.state().advancePayment || 0) > 0 ? 'confirmed' : 'pending';
   });
 
   // Actions
@@ -92,7 +102,7 @@ export class InvoiceService {
   addItem() {
     this.state.update(s => {
       const items = [...s.items];
-      if (items.length < 9) {
+      if (items.length < 10) {
         items.push(this.createEmptyItem());
       }
       return { ...s, items };
@@ -122,7 +132,8 @@ export class InvoiceService {
       items: [this.createEmptyItem()],
       discountPercent: 5,
       gstPercent: 5,
-      adjustment: 0
+      adjustment: 0,
+      advancePayment: 0
     });
   }
 

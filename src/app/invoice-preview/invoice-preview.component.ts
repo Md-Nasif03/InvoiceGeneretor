@@ -31,4 +31,16 @@ export class InvoicePreviewComponent {
   get grandTotal() {
     return this.invoiceService.grandTotal();
   }
+
+  get advancePayment() {
+    return this.invoiceService.invoiceData().advancePayment || 0;
+  }
+
+  get remainingBalance() {
+    return this.invoiceService.remainingBalance();
+  }
+
+  get bookingStatus() {
+    return this.invoiceService.bookingStatus();
+  }
 }

@@ -55,7 +55,7 @@
 
   <!-- Items -->
   <div class="space-y-4 mb-8">
-    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Line Items (Max 9)</h3>
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Line Items (Max 10)</h3>
 
     <div *ngFor="let item of localData.items; let i = index"
       class="p-4 bg-white border border-gray-200 rounded-md mb-2 relative">
@@ -95,7 +95,7 @@
       </div>
     </div>
 
-    <button (click)="addItem()" [disabled]="localData.items.length >= 9"
+    <button (click)="addItem()" [disabled]="localData.items.length >= 10"
       class="w-full py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-md hover:border-blue-500 hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd"
@@ -130,6 +130,47 @@
           (ngModelChange)="onGlobalDataChange('adjustment', $event === '-' || $event === '' ? $event : Number($event))"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="+ / -">
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Information -->
+  <div class="space-y-4 mb-8">
+    <h3 class="text-lg font-semibold text-gray-700 border-b pb-2">Payment Information</h3>
+
+    <div class="grid grid-cols-3 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Amount (₹)</label>
+        <div class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-700 font-medium">
+          ₹ {{ invoiceService.grandTotal() }}
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Advance Payment (₹)</label>
+        <input type="number" [(ngModel)]="localData.advancePayment"
+          (ngModelChange)="onGlobalDataChange('advancePayment', Number($event) || 0)"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="0" min="0">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Remaining Balance (₹)</label>
+        <div class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-sm font-medium"
+          [ngClass]="invoiceService.remainingBalance() > 0 ? 'text-red-600' : 'text-green-600'">
+          ₹ {{ invoiceService.remainingBalance() }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Status Badge -->
+    <div class="mt-2">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Booking Status</label>
+      <div *ngIf="invoiceService.bookingStatus() === 'confirmed'"
+        class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-300">
+        ✅ BOOKING CONFIRMED
+      </div>
+      <div *ngIf="invoiceService.bookingStatus() === 'pending'"
+        class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800 border border-yellow-300">
+        ⏳ PENDING CONFIRMATION
       </div>
     </div>
   </div>
